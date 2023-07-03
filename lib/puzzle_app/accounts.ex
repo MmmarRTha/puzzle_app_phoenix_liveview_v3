@@ -1,4 +1,5 @@
 defmodule PuzzleApp.Accounts do
+  @admin_emails ["admin@email.com"]
   @moduledoc """
   The Accounts context.
   """
@@ -350,4 +351,7 @@ defmodule PuzzleApp.Accounts do
       {:error, :user, changeset, _} -> {:error, changeset}
     end
   end
+
+  def admin?(nil), do: false
+  def admin?(%{email: email}=_user), do: email in @admin_emails
 end

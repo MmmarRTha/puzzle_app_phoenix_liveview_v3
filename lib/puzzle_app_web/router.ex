@@ -68,6 +68,15 @@ defmodule PuzzleAppWeb.Router do
       on_mount: [{PuzzleAppWeb.UserAuth, :ensure_authenticated}] do
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
+    end
+  end
+
+  scope "/admin/", PuzzleAppWeb do
+    pipe_through [:browser, :require_authenticated_user, :require_admin_user]
+
+    live_session :require_admin_user,
+      on_mount: [{PuzzleAppWeb.UserAuth, :ensure_authenticated},
+                  {PuzzleAppWeb.UserAuth, :ensure_admin}] do
 
       live "/puzzles", PuzzleLive.Index, :index
       live "/puzzles/new", PuzzleLive.Index, :new
