@@ -1,11 +1,13 @@
 defmodule PuzzleApp.Game.Puzzle do
   use Ecto.Schema
   import Ecto.Changeset
+  alias PuzzleApp.Game.Point
 
   schema "puzzles" do
     field :name, :string
     field :width, :integer
     field :height, :integer
+    has_many :points, Point
 
     timestamps()
   end

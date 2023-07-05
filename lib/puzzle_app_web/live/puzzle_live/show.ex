@@ -13,7 +13,7 @@ defmodule PuzzleAppWeb.PuzzleLive.Show do
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:puzzle, Game.get_puzzle!(id))}
+     |> assign(:puzzle, Game.get_puzzle!(id) |> IO.inspect())}
   end
 
   defp page_title(:show), do: "Show Puzzle"

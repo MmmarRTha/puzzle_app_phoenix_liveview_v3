@@ -4,9 +4,10 @@ defmodule PuzzleApp.Game do
   """
 
   import Ecto.Query, warn: false
-  alias PuzzleApp.Repo
+  alias Ecto.Multi
 
-  alias PuzzleApp.Game.Puzzle
+  alias PuzzleApp.Repo
+  alias PuzzleApp.Game.{Puzzle, Point}
 
   @doc """
   Returns the list of puzzles.
@@ -35,7 +36,26 @@ defmodule PuzzleApp.Game do
       ** (Ecto.NoResultsError)
 
   """
-  def get_puzzle!(id), do: Repo.get!(Puzzle, id)
+  def get_puzzle!(id) do
+    from(p in Puzzle, where: p.id == ^id, preload: [:points])
+    |> Repo.one()
+  end
+
+  def save_puzzle_points(puzzle, points) do
+    dt =
+      NaiveDateTime.utc_now()
+      |> NaiveDateTime.truncate(:second)
+
+    processed_points =
+      Enum.map(points, fn {x, y} ->
+        %{x: x, y: y, puzzle_id: puzzle.id, inserted_at: dt, updated_at: dt}
+      end)
+
+    Multi.new()
+    |> Multi.delete_all(:points, Ecto.assoc(puzzle, :points))
+    |> Multi.insert_all(:insert_points, Point, processed_points)
+    |> Repo.transaction()
+  end
 
   @doc """
   Creates a puzzle.
