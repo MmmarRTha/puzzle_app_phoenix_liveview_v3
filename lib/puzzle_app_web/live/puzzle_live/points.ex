@@ -42,12 +42,13 @@ defmodule PuzzleAppWeb.PuzzleLive.Points do
     defp fill_color(true), do: "black"
     defp fill_color(false), do: "white"
 
-    defp hover_amount(true), do: "500"
-    defp hover_amount(false), do: "300"
-
     defp hover_class(alive) do
         "hover:fill-slate-#{hover_amount(alive)}"
     end
+
+    defp hover_amount(true), do: "200"
+    defp hover_amount(false), do: "400"
+
 
     @impl true
     def handle_event("toggle", %{"x" => x, "y" => y}, socket) do
@@ -60,7 +61,7 @@ defmodule PuzzleAppWeb.PuzzleLive.Points do
         grid = socket.assigns.grid
         new_grid = Map.put(grid, {x, y}, !grid[{x, y}])
 
-        assign(:grid, new_grid)
+        assign(socket, :grid, new_grid)
     end
 
 end
