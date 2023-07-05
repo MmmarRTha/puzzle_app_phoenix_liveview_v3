@@ -1,6 +1,6 @@
 <div>
-  <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <%= for x <- 0..19, y <- 0..19 do %> 
+  <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+      <%= for x <- 1..@puzzle.width, y <- 1..@puzzle.height do %> 
         <.rect 
           x={x} 
           y={y} 
@@ -10,8 +10,10 @@
   </svg>
   <.button 
     phx-confirm="Are you sure?"
-    phx-click="toggle">Toggle</.button>
+    phx-click="toggle"
+    phx-target={@myself}>Toggle</.button>
   <.button 
     phx-confirm="Are you sure?"
-    phx-click="save">Save</.button>
+    phx-click="save"
+    phx-target={@myself}>Save</.button>
 </div>
