@@ -42,7 +42,7 @@ defmodule PuzzleAppWeb.PuzzleLive.Index do
 
   def load_points(socket, id) do
     socket
-    |> assign(socket, :puzzle, Game.get_puzzle!(id))
+    |> assign(:puzzle, Game.get_puzzle!(id))
   end
   @impl true
   def handle_info({PuzzleAppWeb.PuzzleLive.FormComponent, {:saved, puzzle}}, socket) do
