@@ -39,20 +39,16 @@ defmodule PuzzleAppWeb.PuzzleLive.Points do
         phx-value-y={@y}
         phx-target={@myself}
         fill={fill_color(@alive)}
-        class={hover_class(@alive)} />
+        class={hover_class()} />
         """
     end
 
     defp fill_color(true), do: "black"
     defp fill_color(false), do: "white"
 
-    defp hover_class(alive) do
-        "hover:fill-slate-#{hover_amount(alive)}"
+    defp hover_class() do
+        "hover:opacity-60"
     end
-
-    defp hover_amount(true), do: "200"
-    defp hover_amount(false), do: "400"
-
 
     @impl true
     def handle_event("toggle", %{"x" => x, "y" => y}, socket) do
@@ -61,6 +57,10 @@ defmodule PuzzleAppWeb.PuzzleLive.Points do
 
     def handle_event("save", _meta, socket) do
         {:noreply, save(socket)}
+    end
+
+    def handle_event("toggle", _meta, socket) do
+        {:noreply, toggle(socket)}
     end
 
     defp save(socket) do
@@ -78,6 +78,16 @@ defmodule PuzzleAppWeb.PuzzleLive.Points do
         |> push_patch(to: socket.assigns.patch)
     end
 
+    defp toggle(socket) do
+      toggled_grid =
+        socket.assigns.grid
+        |> Enum.map(fn {point, alive} ->
+            {point, !alive}
+        end)
+        |> Enum.into(%{})
+
+        assign(socket, :grid, toggled_grid)
+    end
     def change_cell(socket, x, y) do
         x = String.to_integer(x)
         y = String.to_integer(y)
