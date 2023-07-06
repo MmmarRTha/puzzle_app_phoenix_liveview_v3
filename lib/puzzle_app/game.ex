@@ -3,11 +3,14 @@ defmodule PuzzleApp.Game do
   The Game context.
   """
 
+  @points_changed_topic "points_changed"
+  @pubsub PuzzleApp.PubSub
+
   import Ecto.Query, warn: false
   alias Ecto.Multi
-
   alias PuzzleApp.Repo
   alias PuzzleApp.Game.{Puzzle, Point}
+  alias Phoenix.PubSub
 
   @doc """
   Returns the list of puzzles.
@@ -41,6 +44,7 @@ defmodule PuzzleApp.Game do
     |> Repo.one()
   end
 
+  # TODO: Broadcast
   def save_puzzle_points(puzzle, points) do
     dt =
       NaiveDateTime.utc_now()
@@ -51,10 +55,22 @@ defmodule PuzzleApp.Game do
         %{x: x, y: y, puzzle_id: puzzle.id, inserted_at: dt, updated_at: dt}
       end)
 
-    Multi.new()
-    |> Multi.delete_all(:points, Ecto.assoc(puzzle, :points))
-    |> Multi.insert_all(:insert_points, Point, processed_points)
-    |> Repo.transaction()
+    result =
+      Multi.new()
+      |> Multi.delete_all(:points, Ecto.assoc(puzzle, :points))
+      |> Multi.insert_all(:insert_points, Point, processed_points)
+      |> Repo.transaction()
+
+    broadcast_puzzle_changed(puzzle)
+    result
+  end
+
+  def broadcast_puzzle_changed(puzzle) do
+    PubSub.broadcast(@pubsub, @points_changed_topic, {:points_changed, puzzle.id})
+  end
+
+  def subscribe_puzzle_changed() do
+    PubSub.subscribe(@pubsub, @points_changed_topic)
   end
 
   @doc """
